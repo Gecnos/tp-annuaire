@@ -1,9 +1,10 @@
 import { NavLink } from "react-router-dom";
-import { User, Plus, Home } from "lucide-react";
+import { User, Plus, Home, X } from "lucide-react";
 import { useContacts } from "../../hooks/useContact";
 
 interface SidebarProps {
   onOpenNewContact: () => void;
+  onClose?: () => void;
 }
 
 // Labels prédéfinis avec leur couleur
@@ -13,7 +14,7 @@ const BUILT_IN_LABELS = [
   { key: "Friends", label: "Amis", dot: "bg-purple-500" },
 ];
 
-export default function Sidebar({ onOpenNewContact }: SidebarProps) {
+export default function Sidebar({ onOpenNewContact, onClose }: SidebarProps) {
   const { contacts } = useContacts();
 
   // Tous les groupes uniques présents dans les contacts
@@ -37,19 +38,29 @@ export default function Sidebar({ onOpenNewContact }: SidebarProps) {
 
   return (
     <div className="h-full flex flex-col bg-slate-50 border-r border-gray-200 w-64">
-      {/* Logo */}
-      <div className="p-6 flex items-center gap-3">
-        <div className="bg-blue-600 text-white p-2 rounded-lg">
-          <User size={20} strokeWidth={2.5} />
+      {/* Logo + bouton fermer (mobile uniquement) */}
+      <div className="p-6 flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="bg-blue-600 text-white p-2 rounded-lg">
+            <User size={20} strokeWidth={2.5} />
+          </div>
+          <h1 className="font-bold text-gray-900 text-lg leading-tight">
+            ContactManager
+          </h1>
         </div>
-        <h1 className="font-bold text-gray-900 text-lg leading-tight">
-          ContactManager
-        </h1>
+        {onClose && (
+          <button
+            onClick={onClose}
+            className="lg:hidden p-1.5 rounded-lg text-gray-500 hover:bg-gray-200 transition-colors"
+          >
+            <X size={20} />
+          </button>
+        )}
       </div>
 
       <nav className="flex-1 px-4 py-2 space-y-1 overflow-y-auto">
         {/* Accueil */}
-        <NavLink to="/" end className={navLinkClass}>
+        <NavLink to="/" end className={navLinkClass} onClick={onClose}>
           <Home size={18} />
           Tous les contacts
         </NavLink>
@@ -61,7 +72,7 @@ export default function Sidebar({ onOpenNewContact }: SidebarProps) {
 
         {/* Labels prédéfinis */}
         {BUILT_IN_LABELS.map(({ key, label, dot }) => (
-          <NavLink key={key} to={`/label/${key}`} className={labelLinkClass}>
+          <NavLink key={key} to={`/label/${key}`} className={labelLinkClass} onClick={onClose}>
             <div className={`w-2.5 h-2.5 rounded-full ${dot} shrink-0`} />
             {label}
           </NavLink>
@@ -73,6 +84,7 @@ export default function Sidebar({ onOpenNewContact }: SidebarProps) {
             key={group}
             to={`/label/${encodeURIComponent(group)}`}
             className={labelLinkClass}
+            onClick={onClose}
           >
             <div className="w-2.5 h-2.5 rounded-full bg-gray-400 shrink-0" />
             {group}

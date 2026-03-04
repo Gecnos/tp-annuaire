@@ -76,7 +76,7 @@ export default function Dashboard() {
   const pageNumbers = Array.from({ length: totalPages }, (_, i) => i + 1);
 
   return (
-    <div className="w-full max-w-6xl mx-auto mt-4">
+    <div className="w-full max-w-6xl mx-auto mt-2 sm:mt-4">
       {/* Modale d'édition */}
       <NewContactModal
         isOpen={contactToEdit !== null}
@@ -89,8 +89,8 @@ export default function Dashboard() {
         contactToEdit={contactToEdit}
       />
       {/* Onglets */}
-      <div className="flex items-center gap-8 border-b border-gray-200 mb-6 px-2">
-        <button className="text-blue-600 font-bold border-b-2 border-blue-600 pb-4 px-1">
+      <div className="flex items-center gap-8 border-b border-gray-200 mb-4 sm:mb-6 px-2">
+        <button className="text-blue-600 font-bold border-b-2 border-blue-600 pb-3 sm:pb-4 px-1 text-sm sm:text-base">
           {query
             ? `Résultats pour "${query}" (${filteredContacts.length})`
             : `Tous les contacts (${contacts.length})`}
@@ -98,15 +98,15 @@ export default function Dashboard() {
       </div>
 
       <div className="bg-white rounded-xl shadow-[0_2px_10px_-3px_rgba(6,81,237,0.1)] border border-gray-100 overflow-hidden">
-        <div className="overflow-x-auto min-h-[300px]">
+        <div className="overflow-x-auto min-h-75">
           <table ref={tableRef} className="w-full text-left border-collapse">
             <thead>
               <tr className="border-b border-gray-100 text-xs uppercase tracking-wider text-gray-500 font-bold bg-slate-50/50">
-                <th className="px-6 py-5">Nom</th>
-                <th className="px-6 py-5">Email</th>
-                <th className="px-6 py-5">Téléphone</th>
-                <th className="px-6 py-5">Groupes</th>
-                <th className="px-6 py-5 text-right">Actions</th>
+                <th className="px-4 sm:px-6 py-4 sm:py-5">Nom</th>
+                <th className="hidden sm:table-cell px-6 py-5">Email</th>
+                <th className="hidden md:table-cell px-6 py-5">Téléphone</th>
+                <th className="hidden lg:table-cell px-6 py-5">Groupes</th>
+                <th className="px-4 sm:px-6 py-4 sm:py-5 text-right">Actions</th>
               </tr>
             </thead>
 
@@ -118,9 +118,9 @@ export default function Dashboard() {
                   onClick={() => navigate(`/contact/${contact.id}`)}
                 >
                   {/* Nom & Avatar */}
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex items-center gap-4">
-                      <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 font-bold overflow-hidden shrink-0 border border-gray-200">
+                  <td className="px-4 sm:px-6 py-4 whitespace-nowrap">
+                    <div className="flex items-center gap-3 sm:gap-4">
+                      <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 font-bold overflow-hidden shrink-0 border border-gray-200">
                         {contact.avatarUrl ? (
                           <img
                             src={contact.avatarUrl}
@@ -137,24 +137,28 @@ export default function Dashboard() {
                         )}
                       </div>
                       <div>
-                        <div className="font-bold text-gray-900 group-hover:text-blue-600 transition-colors">
+                        <div className="font-bold text-gray-900 group-hover:text-blue-600 transition-colors text-sm sm:text-base">
                           {contact.name}
                         </div>
-                        <div className="text-sm text-gray-500">
+                        <div className="text-xs sm:text-sm text-gray-500">
                           {contact.role || "Contact"}
+                        </div>
+                        {/* Infos compactes sur mobile */}
+                        <div className="sm:hidden text-xs text-gray-400 mt-0.5">
+                          {contact.email}
                         </div>
                       </div>
                     </div>
                   </td>
 
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600 font-medium">
+                  <td className="hidden sm:table-cell px-6 py-4 whitespace-nowrap text-sm text-gray-600 font-medium">
                     {contact.email}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                  <td className="hidden md:table-cell px-6 py-4 whitespace-nowrap text-sm text-gray-600">
                     {contact.phone}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex gap-2">
+                  <td className="hidden lg:table-cell px-6 py-4 whitespace-nowrap">
+                    <div className="flex gap-2 flex-wrap">
                       {contact.groups?.map((group) => (
                         <GroupBadge key={group} group={group} />
                       ))}
@@ -250,13 +254,13 @@ export default function Dashboard() {
                 </tr>
               ))}
 
-              {contacts.length === 0 && (
+              {filteredContacts.length === 0 && (
                 <tr>
                   <td
                     colSpan={5}
                     className="px-6 py-12 text-center text-gray-400 italic text-sm"
                   >
-                    Aucun contact pour le moment.
+                    {query ? `Aucun résultat pour "${query}".` : "Aucun contact pour le moment."}
                   </td>
                 </tr>
               )}
@@ -265,11 +269,11 @@ export default function Dashboard() {
         </div>
 
         {/* Pagination */}
-        <div className="px-6 py-4 border-t border-gray-100 flex items-center justify-between bg-white">
-          <span className="text-sm text-gray-500 font-medium">
-            {contacts.length === 0
+        <div className="px-4 sm:px-6 py-4 border-t border-gray-100 flex items-center justify-between bg-white flex-wrap gap-3">
+          <span className="text-xs sm:text-sm text-gray-500 font-medium">
+            {filteredContacts.length === 0
               ? "Aucun contact"
-              : `Affichage de ${startIndex + 1} à ${endIndex} sur ${contacts.length} contacts`}
+              : `${startIndex + 1}–${endIndex} sur ${filteredContacts.length}`}
           </span>
 
           <div className="flex items-center gap-2">

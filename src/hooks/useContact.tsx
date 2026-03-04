@@ -1,9 +1,15 @@
+// Ré-export depuis le contexte partagé pour assurer que tous les composants
+// partagent le même état (pas de désynchronisation entre Dashboard et App)
+export { useContacts } from "../context/ContactsContext";
+
+// ---- Ancienne implémentation conservée ci-dessous pour référence ----
+// (elle n'est plus utilisée, l'état vient du ContactsProvider)
 import { useState, useEffect } from "react";
 import { Contact } from "../types";
 
 const STORAGE_KEY = "contact_manager_data";
 
-export function useContacts() {
+function _useContactsLegacy() {
   const [contacts, setContacts] = useState<Contact[]>(() => {
     const saved = localStorage.getItem(STORAGE_KEY);
     return saved ? JSON.parse(saved) : [];
